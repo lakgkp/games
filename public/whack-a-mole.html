@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Whack-a-Mole</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .wam-board { display: grid; grid-template-columns: repeat(3, 80px); gap: 10px; justify-content: center; margin: 2rem 0; }
+    .wam-cell { width: 80px; height: 80px; background: #fff; border-radius: 0.5rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 2rem; cursor: pointer; }
+    .wam-cell.active { background: #ffe066; }
+    .wam-controls { text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Whack-a-Mole</h1>
+    <a href="index.html">&larr; Back to Games</a>
+  </header>
+  <main>
+    <section style="max-width:500px;margin:1.5rem auto 0 auto;padding:1rem 1.5rem;background:#f8fafc;border-radius:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);color:#333;">
+      <h2 style="margin-top:0;">How to Play</h2>
+      <ul style="margin:0 0 0.5rem 1.2rem;padding:0;font-size:1rem;">
+        <li>Click on the mole (🐹) as quickly as you can when it appears.</li>
+        <li>Each successful click increases your score.</li>
+        <li>Try to get the highest score before stopping the game!</li>
+      </ul>
+    </section>
+    <div class="wam-board" id="wam-board"></div>
+    <div class="wam-controls">
+      <button onclick="startWam()">Start</button>
+      <button onclick="stopWam()">Stop</button>
+      <p id="wam-status"></p>
+    </div>
+  </main>
+  <script>
+    let wamActive = false, wamScore = 0, wamMole = -1, wamTimer;
+    function renderWam() {
+      const board = document.getElementById('wam-board');
+      board.innerHTML = '';
+      for (let i = 0; i < 9; i++) {
+        const div = document.createElement('div');
+        div.className = 'wam-cell' + (i === wamMole ? ' active' : '');
+        div.textContent = i === wamMole ? '🐹' : '';
+        div.onclick = () => wamHit(i);
+        board.appendChild(div);
+      }
+    }
+    function wamHit(i) {
+      if (!wamActive) return;
+      if (i === wamMole) {
+        wamScore++;
+        document.getElementById('wam-status').textContent = 'Score: ' + wamScore;
+        nextMole();
+      }
+    }
+    function nextMole() {
+      wamMole = Math.floor(Math.random() * 9);
+      renderWam();
+    }
+    function startWam() {
+      wamActive = true;
+      wamScore = 0;
+      document.getElementById('wam-status').textContent = 'Score: 0';
+      nextMole();
+      wamTimer = setInterval(nextMole, 1000);
+    }
+    function stopWam() {
+      wamActive = false;
+      clearInterval(wamTimer);
+      wamMole = -1;
+      renderWam();
+      document.getElementById('wam-status').textContent += ' | Game stopped.';
+    }
+    renderWam();
+  </script>
+</body>
+</html>

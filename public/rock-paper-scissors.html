@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rock Paper Scissors</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .rps-container { text-align: center; margin-top: 2rem; }
+    .choices { display: flex; justify-content: center; gap: 2rem; margin: 2rem 0; }
+    .choice-btn { font-size: 2rem; padding: 1rem 2rem; border-radius: 1rem; border: none; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.08); cursor: pointer; transition: background 0.2s; }
+    .choice-btn:hover { background: #e0eaff; }
+    .result { font-size: 1.5rem; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Rock Paper Scissors</h1>
+    <a href="index.html">&larr; Back to Games</a>
+  </header>
+  <main>
+    <div class="rps-container">
+      <div class="choices">
+        <button class="choice-btn" onclick="play('rock')">🪨 Rock</button>
+        <button class="choice-btn" onclick="play('paper')">📄 Paper</button>
+        <button class="choice-btn" onclick="play('scissors')">✂️ Scissors</button>
+      </div>
+      <div class="result" id="result"></div>
+    </div>
+  </main>
+  <script>
+    function play(userChoice) {
+      const choices = ['rock', 'paper', 'scissors'];
+      const emojis = { rock: '🪨', paper: '📄', scissors: '✂️' };
+      const computerChoice = choices[Math.floor(Math.random() * 3)];
+      let result = '';
+      if (userChoice === computerChoice) {
+        result = `It's a draw! You both chose ${emojis[userChoice]}`;
+      } else if (
+        (userChoice === 'rock' && computerChoice === 'scissors') ||
+        (userChoice === 'paper' && computerChoice === 'rock') ||
+        (userChoice === 'scissors' && computerChoice === 'paper')
+      ) {
+        result = `You win! ${emojis[userChoice]} beats ${emojis[computerChoice]}`;
+      } else {
+        result = `You lose! ${emojis[computerChoice]} beats ${emojis[userChoice]}`;
+      }
+      document.getElementById('result').textContent = result;
+    }
+  </script>
+</body>
+</html>

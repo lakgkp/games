@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fun Games Hub | Play Free Online Games</title>
+  <meta name="description" content="Play a variety of free, fun, and interactive games online! Enjoy Sudoku, Tic-Tac-Toe, 2048, Snake, Memory Match, Whack-a-Mole, Minesweeper, and more. No login required.">
+  <meta name="keywords" content="games, free games, online games, sudoku, tic-tac-toe, 2048, snake, memory match, whack-a-mole, minesweeper, browser games, fun games">
+  <meta name="robots" content="index, follow">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: linear-gradient(135deg, #0f2027 0%, #2c5364 100%); }
+    .hero {
+      text-align: center;
+      padding: 0 0 2rem 0;
+      background: none;
+      color: #fff;
+      border-radius: 0 0 2rem 2rem;
+      margin-bottom: 2rem;
+      position: relative;
+    }
+    .hero-title {
+      font-size: 2.8rem;
+      font-weight: 800;
+      letter-spacing: 2px;
+      margin: 1.5rem 0 0.5rem 0;
+      background: linear-gradient(90deg,#4f8cff,#6ee7b7 80%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-desc {
+      font-size: 1.3rem;
+      color: #e0eaff;
+      margin-bottom: 1.5rem;
+    }
+    .games-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 2rem;
+      margin: 2rem 0 4rem 0;
+    }
+    .game-card {
+      background: rgba(255,255,255,0.95);
+      border-radius: 1.5rem;
+      box-shadow: 0 2px 16px rgba(79,140,255,0.10);
+      padding: 2rem 2.5rem;
+      text-decoration: none;
+      color: #222;
+      font-size: 1.3rem;
+      font-weight: 500;
+      transition: transform 0.2s, box-shadow 0.2s, color 0.2s;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-width: 180px;
+      min-height: 120px;
+      position: relative;
+      border: 2px solid #4f8cff22;
+      backdrop-filter: blur(2px);
+    }
+    .game-card:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 8px 32px rgba(79,140,255,0.18);
+      color: #4f8cff;
+      border-color: #4f8cff88;
+    }
+    .game-emoji {
+      font-size: 2.5rem;
+      margin-bottom: 0.5rem;
+      filter: drop-shadow(0 2px 8px #4f8cff33);
+    }
+    @media (max-width: 600px) {
+      .games-list { gap: 1rem; }
+      .game-card { padding: 1.2rem 0.5rem; min-width: 120px; min-height: 80px; }
+      .hero-title { font-size: 2rem; }
+    }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <!-- Futuristic hero image -->
+    <img src="https://images.unsplash.com/photo-1511512578047-dfb367046420?auto=format&fit=crop&w=900&q=80" alt="Futuristic Games" style="width:100%;max-height:320px;object-fit:cover;border-radius:2rem 2rem 0 0;box-shadow:0 8px 32px rgba(79,140,255,0.18);margin-bottom:0.5rem;">
+    <h1 class="hero-title">🎮 Fun Games Hub</h1>
+    <p class="hero-desc">Play free, fun, and interactive games online! No login required. <br> Enjoy Sudoku, Snake, 2048, and more.</p>
+  </header>
+  <main>
+    <section class="games-list">
+      <a href="tic-tac-toe.html" class="game-card"><span class="game-emoji">❌⭕</span>Tic-Tac-Toe</a>
+      <a href="rock-paper-scissors.html" class="game-card"><span class="game-emoji">✊✋✌️</span>Rock Paper Scissors</a>
+      <a href="sudoku.html" class="game-card"><span class="game-emoji">🔢</span>Sudoku</a>
+      <a href="memory-match.html" class="game-card"><span class="game-emoji">🧠</span>Memory Match</a>
+      <a href="2048.html" class="game-card"><span class="game-emoji">🔲</span>2048</a>
+      <a href="whack-a-mole.html" class="game-card"><span class="game-emoji">🐹</span>Whack-a-Mole</a>
+      <a href="snake.html" class="game-card"><span class="game-emoji">🐍</span>Snake</a>
+      <a href="minesweeper.html" class="game-card"><span class="game-emoji">💣</span>Minesweeper</a>
+      <!-- Add more games here -->
+    </section>
+    <section style="text-align:center; color:#e0eaff; font-size:1.1rem; max-width:700px; margin:0 auto 2rem auto; background:rgba(44,83,100,0.7); border-radius:1.5rem; padding:1.5rem 1rem; box-shadow:0 2px 16px #4f8cff22;">
+      <p>Enjoy classic and modern games right in your browser. Challenge yourself, improve your memory, and have fun! <br> <b>All games are free and require no login.</b></p>
+    </section>
+  </main>
+  <footer>
+    <p style="color:#e0eaff;">&copy; 2025 Fun Games Hub. All rights reserved.</p>
+  </footer>
+</body>
+</html>

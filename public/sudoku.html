@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sudoku</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .sudoku-board { display: grid; grid-template-columns: repeat(9, 40px); gap: 2px; justify-content: center; margin: 2rem 0; }
+    .sudoku-cell { width: 40px; height: 40px; font-size: 1.2rem; text-align: center; border: 1px solid #bbb; background: #fff; }
+    .sudoku-cell:focus { outline: 2px solid #4f8cff; }
+    .sudoku-controls { text-align: center; margin-top: 1rem; }
+    .sudoku-board .sudoku-cell:nth-child(3n) { border-right: 2px solid #4f8cff; }
+    .sudoku-board .sudoku-cell:nth-child(n+19):nth-child(-n+27),
+    .sudoku-board .sudoku-cell:nth-child(n+46):nth-child(-n+54) { border-bottom: 2px solid #4f8cff; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Sudoku</h1>
+    <a href="index.html">&larr; Back to Games</a>
+  </header>
+  <main>
+    <section style="max-width:500px;margin:1.5rem auto 0 auto;padding:1rem 1.5rem;background:#f8fafc;border-radius:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);color:#333;">
+      <h2 style="margin-top:0;">How to Play</h2>
+      <ul style="margin:0 0 0.5rem 1.2rem;padding:0;font-size:1rem;">
+        <li>Fill the 9x9 grid so that every row, column, and 3x3 box contains the numbers 1 to 9 exactly once.</li>
+        <li>Click a cell and type a number (1-9). Blue cells are fixed clues.</li>
+        <li>Choose a difficulty level below for a new puzzle!</li>
+      </ul>
+    </section>
+    <div class="sudoku-controls">
+      <label for="sudoku-difficulty">Difficulty: </label>
+      <select id="sudoku-difficulty" onchange="generateSudoku()">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+      <button onclick="generateSudoku()">New Puzzle</button>
+      <button onclick="resetSudoku()">Reset</button>
+      <button onclick="checkSudoku()">Check</button>
+      <p id="sudoku-status"></p>
+    </div>
+    <div class="sudoku-board" id="sudoku-board"></div>
+  </main>
+  <script>
+    // Sudoku puzzle generator
+    function shuffle(a) { for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+    function fillGrid(grid) {
+      for(let i=0;i<81;i++) if(grid[i]===0){
+        let nums=shuffle([1,2,3,4,5,6,7,8,9]);
+        for(let n of nums){
+          let r=Math.floor(i/9),c=i%9,ok=true;
+          for(let j=0;j<9;j++) if(grid[r*9+j]===n||grid[j*9+c]===n) ok=false;
+          let br=3*Math.floor(r/3),bc=3*Math.floor(c/3);
+          for(let dr=0;dr<3;dr++) for(let dc=0;dc<3;dc++) if(grid[(br+dr)*9+bc+dc]===n) ok=false;
+          if(ok){grid[i]=n;if(fillGrid(grid))return true;grid[i]=0;}
+        }
+        return false;
+      }
+      return true;
+    }
+    function makePuzzle(grid, clues) {
+      let puzzle = grid.slice();
+      let cells = shuffle([...Array(81).keys()]);
+      let removed = 81-clues;
+      for(let i=0;i<removed;i++) puzzle[cells[i]]=0;
+      return puzzle;
+    }
+    let solution = [], puzzle = [], userBoard = [], fixed = [];
+    function generateSudoku() {
+      let diff = document.getElementById('sudoku-difficulty').value;
+      let clues = diff==='easy'?40:diff==='hard'?25:32;
+      let grid = Array(81).fill(0);
+      fillGrid(grid);
+      solution = grid.slice();
+      puzzle = makePuzzle(grid, clues);
+      userBoard = puzzle.slice();
+      fixed = puzzle.map(v=>v!==0);
+      renderSudoku();
+      document.getElementById('sudoku-status').textContent = '';
+    }
+    function renderSudoku() {
+      const board = document.getElementById('sudoku-board');
+      board.innerHTML = '';
+      userBoard.forEach((val, i) => {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.maxLength = 1;
+        input.className = 'sudoku-cell';
+        input.value = val === 0 ? '' : val;
+        if (fixed[i]) {
+          input.disabled = true;
+          input.style.background = '#e0eaff';
+        }
+        input.oninput = (e) => {
+          const v = e.target.value.replace(/[^1-9]/g, '');
+          e.target.value = v;
+          userBoard[i] = v ? parseInt(v) : 0;
+        };
+        board.appendChild(input);
+      });
+    }
+    function resetSudoku() {
+      userBoard = puzzle.slice();
+      renderSudoku();
+      document.getElementById('sudoku-status').textContent = '';
+    }
+    function checkSudoku() {
+      for (let i = 0; i < 81; i++) {
+        if (userBoard[i] !== solution[i]) {
+          document.getElementById('sudoku-status').textContent = 'Incorrect or incomplete!';
+          return;
+        }
+      }
+      document.getElementById('sudoku-status').textContent = 'Congratulations! Sudoku solved!';
+    }
+    generateSudoku();
+  </script>
+</body>
+</html>

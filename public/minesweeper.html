@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minesweeper</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .minesweeper-board { display: grid; grid-template-columns: repeat(8, 32px); gap: 2px; justify-content: center; margin: 2rem 0; }
+    .minesweeper-cell { width: 32px; height: 32px; background: #fff; border-radius: 0.3rem; box-shadow: 0 2px 8px rgba(0,0,0,0.08); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; cursor: pointer; user-select: none; }
+    .minesweeper-cell.revealed { background: #e0eaff; cursor: default; }
+    .minesweeper-controls { text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Minesweeper</h1>
+    <a href="index.html">&larr; Back to Games</a>
+  </header>
+  <main>
+    <section style="max-width:500px;margin:1.5rem auto 0 auto;padding:1rem 1.5rem;background:#f8fafc;border-radius:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);color:#333;">
+      <h2 style="margin-top:0;">How to Play</h2>
+      <ul style="margin:0 0 0.5rem 1.2rem;padding:0;font-size:1rem;">
+        <li>Click on a cell to reveal it.</li>
+        <li>If you reveal a mine (💣), the game is over.</li>
+        <li>Numbers show how many mines are adjacent. Reveal all safe cells to win!</li>
+      </ul>
+    </section>
+    <div class="minesweeper-board" id="minesweeper-board"></div>
+    <div class="minesweeper-controls">
+      <button onclick="resetMinesweeper()">Restart</button>
+      <p id="minesweeper-status"></p>
+    </div>
+  </main>
+  <script>
+    const size = 8, mines = 10;
+    let board, revealed, flagged, gameOver;
+    function initMinesweeper() {
+      board = Array(size*size).fill(0);
+      revealed = Array(size*size).fill(false);
+      flagged = Array(size*size).fill(false);
+      gameOver = false;
+      // Place mines
+      let m = 0;
+      while (m < mines) {
+        let idx = Math.floor(Math.random()*size*size);
+        if (board[idx] !== 'M') {
+          board[idx] = 'M';
+          m++;
+        }
+      }
+      // Fill numbers
+      for (let i = 0; i < size*size; i++) {
+        if (board[i] === 'M') continue;
+        let count = 0;
+        for (let dx=-1;dx<=1;dx++) for (let dy=-1;dy<=1;dy++) {
+          let x = i%size+dx, y = Math.floor(i/size)+dy;
+          if (x>=0&&x<size&&y>=0&&y<size&&board[y*size+x]==='M') count++;
+        }
+        board[i] = count;
+      }
+      renderMinesweeper();
+      document.getElementById('minesweeper-status').textContent = '';
+    }
+    function renderMinesweeper() {
+      const el = document.getElementById('minesweeper-board');
+      el.innerHTML = '';
+      for (let i = 0; i < size*size; i++) {
+        const d = document.createElement('div');
+        d.className = 'minesweeper-cell' + (revealed[i] ? ' revealed' : '');
+        d.textContent = revealed[i] ? (board[i]==='M'?'💣':(board[i]||'')) : '';
+        d.onclick = () => revealCell(i);
+        el.appendChild(d);
+      }
+    }
+    function revealCell(i) {
+      if (gameOver || revealed[i]) return;
+      revealed[i] = true;
+      if (board[i] === 'M') {
+        document.getElementById('minesweeper-status').textContent = 'Game Over!';
+        gameOver = true;
+        renderMinesweeper();
+        return;
+      }
+      if (board[i] === 0) {
+        for (let dx=-1;dx<=1;dx++) for (let dy=-1;dy<=1;dy++) {
+          let x = i%size+dx, y = Math.floor(i/size)+dy, ni = y*size+x;
+          if (x>=0&&x<size&&y>=0&&y<size&&!revealed[ni]) revealCell(ni);
+        }
+      }
+      renderMinesweeper();
+      if (revealed.filter(Boolean).length === size*size-mines) {
+        document.getElementById('minesweeper-status').textContent = 'You win!';
+        gameOver = true;
+      }
+    }
+    function resetMinesweeper() {initMinesweeper();}
+    initMinesweeper();
+  </script>
+</body>
+</html>

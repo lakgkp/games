@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2048</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .game-2048-board { display: grid; grid-template-columns: repeat(4, 60px); gap: 8px; justify-content: center; margin: 2rem 0; }
+    .game-2048-cell { width: 60px; height: 60px; background: #eee; border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: bold; }
+    .game-2048-controls { text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>2048</h1>
+    <a href="index.html">&larr; Back to Games</a>
+  </header>
+  <main>
+    <section style="max-width:500px;margin:1.5rem auto 0 auto;padding:1rem 1.5rem;background:#f8fafc;border-radius:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);color:#333;">
+      <h2 style="margin-top:0;">How to Play</h2>
+      <ul style="margin:0 0 0.5rem 1.2rem;padding:0;font-size:1rem;">
+        <li>Use the arrow keys to move all tiles in the chosen direction.</li>
+        <li>When two tiles with the same number touch, they merge into one.</li>
+        <li>Try to reach the 2048 tile to win!</li>
+      </ul>
+    </section>
+    <div class="game-2048-board" id="board-2048"></div>
+    <div class="game-2048-controls">
+      <button onclick="reset2048()">Restart</button>
+      <p id="status-2048"></p>
+      <p style="font-size:0.9rem;color:#888;">Use arrow keys to play</p>
+    </div>
+  </main>
+  <script>
+    let board, score;
+    function init2048() {
+      board = Array(16).fill(0);
+      score = 0;
+      addTile();
+      addTile();
+      render2048();
+    }
+    function addTile() {
+      const empty = board.map((v,i) => v===0?i:null).filter(v=>v!==null);
+      if (empty.length) board[empty[Math.floor(Math.random()*empty.length)]] = Math.random()<0.9?2:4;
+    }
+    function render2048() {
+      const el = document.getElementById('board-2048');
+      el.innerHTML = '';
+      board.forEach(v => {
+        const d = document.createElement('div');
+        d.className = 'game-2048-cell';
+        d.textContent = v ? v : '';
+        d.style.background = v ? `hsl(${40+v*2},70%,80%)` : '#eee';
+        el.appendChild(d);
+      });
+      document.getElementById('status-2048').textContent = 'Score: ' + score;
+    }
+    function move2048(dir) {
+      let moved = false;
+      function slide(row) {
+        row = row.filter(x=>x);
+        for(let i=0;i<row.length-1;i++){
+          if(row[i]===row[i+1]){row[i]*=2;score+=row[i];row[i+1]=0;}
+        }
+        return row.filter(x=>x).concat(Array(4-row.filter(x=>x).length).fill(0));
+      }
+      for(let i=0;i<4;i++){
+        let line = [];
+        for(let j=0;j<4;j++){
+          line.push(dir%2===0?board[i*4+j]:board[j*4+i]);
+        }
+        let orig = [...line];
+        if(dir<2)line.reverse();
+        line = slide(line);
+        if(dir<2)line.reverse();
+        for(let j=0;j<4;j++){
+          if(dir%2===0){if(board[i*4+j]!==line[j])moved=true;board[i*4+j]=line[j];}
+          else{if(board[j*4+i]!==line[j])moved=true;board[j*4+i]=line[j];}
+        }
+      }
+      if(moved){addTile();render2048();if(board.includes(2048)){document.getElementById('status-2048').textContent='You win!';}}
+      else if(!board.includes(0)&&!canMove()){document.getElementById('status-2048').textContent='Game Over!';}
+    }
+    function canMove(){
+      for(let i=0;i<4;i++)for(let j=0;j<4;j++){
+        if(board[i*4+j]===0)return true;
+        if(j<3&&board[i*4+j]===board[i*4+j+1])return true;
+        if(i<3&&board[i*4+j]===board[(i+1)*4+j])return true;
+      }
+      return false;
+    }
+    document.addEventListener('keydown',e=>{
+      if(['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'].includes(e.key)){
+        move2048(['ArrowLeft','ArrowUp','ArrowRight','ArrowDown'].indexOf(e.key));
+      }
+    });
+    function reset2048(){init2048();}
+    init2048();
+  </script>
+</body>
+</html>

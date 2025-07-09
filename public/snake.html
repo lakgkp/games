@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Snake Game</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    .snake-board { background: #222; margin: 2rem auto; display: block; border-radius: 1rem; box-shadow: 0 2px 8px rgba(0,0,0,0.15); }
+    .snake-controls { text-align: center; margin-top: 1rem; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Snake Game</h1>
+    <a href="index.html">&larr; Back to Games</a>
+  </header>
+  <main>
+    <section style="max-width:500px;margin:1.5rem auto 0 auto;padding:1rem 1.5rem;background:#f8fafc;border-radius:1rem;box-shadow:0 2px 8px rgba(0,0,0,0.06);color:#333;">
+      <h2 style="margin-top:0;">How to Play</h2>
+      <ul style="margin:0 0 0.5rem 1.2rem;padding:0;font-size:1rem;">
+        <li>Use the arrow keys to control the snake's direction.</li>
+        <li>Eat the red food squares to grow and increase your score.</li>
+        <li>Avoid running into the walls or your own tail.</li>
+        <li>Choose a difficulty level below before starting!</li>
+      </ul>
+    </section>
+    <div class="snake-controls">
+      <label for="snake-difficulty">Difficulty: </label>
+      <select id="snake-difficulty" onchange="resetSnake()">
+        <option value="easy">Easy</option>
+        <option value="medium" selected>Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+      <button onclick="resetSnake()">Restart</button>
+      <p id="snake-status"></p>
+      <p style="font-size:0.9rem;color:#888;">Use arrow keys to play</p>
+    </div>
+    <canvas id="snake-canvas" width="320" height="320" class="snake-board"></canvas>
+  </main>
+  <script>
+    const canvas = document.getElementById('snake-canvas');
+    const ctx = canvas.getContext('2d');
+    let snake, food, dir, nextDir, score, interval, gameOver, speed;
+    function getSpeed() {
+      const diff = document.getElementById('snake-difficulty')?.value || 'medium';
+      if (diff === 'easy') return 180;
+      if (diff === 'hard') return 70;
+      return 120;
+    }
+    function resetSnake() {
+      snake = [{x:8,y:8}];
+      food = {x:Math.floor(Math.random()*16),y:Math.floor(Math.random()*16)};
+      dir = {x:1,y:0};
+      nextDir = {x:1,y:0};
+      score = 0;
+      gameOver = false;
+      document.getElementById('snake-status').textContent = 'Score: 0';
+      clearInterval(interval);
+      speed = getSpeed();
+      interval = setInterval(tick, speed);
+      draw();
+    }
+    function tick() {
+      if (gameOver) return;
+      dir = nextDir;
+      const head = {x:snake[0].x+dir.x, y:snake[0].y+dir.y};
+      if (head.x<0||head.x>15||head.y<0||head.y>15||snake.some(s=>s.x===head.x&&s.y===head.y)) {
+        document.getElementById('snake-status').textContent = 'Game Over! Score: '+score;
+        gameOver = true;
+        clearInterval(interval);
+        return;
+      }
+      snake.unshift(head);
+      if (head.x===food.x&&head.y===food.y) {
+        score++;
+        document.getElementById('snake-status').textContent = 'Score: '+score;
+        // Place food not on snake
+        do {
+          food = {x:Math.floor(Math.random()*16),y:Math.floor(Math.random()*16)};
+        } while (snake.some(s=>s.x===food.x&&s.y===food.y));
+      } else {
+        snake.pop();
+      }
+      draw();
+    }
+    function draw() {
+      ctx.clearRect(0,0,320,320);
+      // Animate background
+      for(let i=0;i<16;i++) for(let j=0;j<16;j++){
+        ctx.fillStyle = (i+j)%2===0 ? '#222' : '#2a2a2a';
+        ctx.fillRect(i*20,j*20,20,20);
+      }
+      // Draw food
+      ctx.save();
+      ctx.shadowColor = '#ff4f4f';
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = '#ff4f4f';
+      ctx.beginPath();
+      ctx.arc(food.x*20+10,food.y*20+10,9,0,2*Math.PI);
+      ctx.fill();
+      ctx.restore();
+      // Draw snake
+      snake.forEach((s,i)=>{
+        ctx.save();
+        ctx.shadowColor = '#4f8cff';
+        ctx.shadowBlur = i===0?12:0;
+        ctx.fillStyle = i===0?'#4f8cff':'#7dd3fc';
+        ctx.beginPath();
+        ctx.arc(s.x*20+10,s.y*20+10,9,0,2*Math.PI);
+        ctx.fill();
+        ctx.restore();
+      });
+    }
+    document.addEventListener('keydown',e=>{
+      if (e.key==='ArrowUp'&&dir.y!==1) nextDir={x:0,y:-1};
+      if (e.key==='ArrowDown'&&dir.y!==-1) nextDir={x:0,y:1};
+      if (e.key==='ArrowLeft'&&dir.x!==1) nextDir={x:-1,y:0};
+      if (e.key==='ArrowRight'&&dir.x!==-1) nextDir={x:1,y:0};
+    });
+    resetSnake();
+  </script>
+</body>
+</html>
